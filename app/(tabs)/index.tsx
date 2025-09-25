@@ -1,9 +1,11 @@
 import { ThemedButton } from "@/components/themed-button";
+import { Card } from "@/components/ui/card";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { commonStyles } from "@/styles/common";
 import { Obstacle } from "../../interfaces/obstacle";
 import { LocalStorageServiceAsync } from "../../utils/storage";
 
@@ -59,43 +61,43 @@ export default function Index() {
   const renderObstacle = ({ item }: { item: Obstacle }) => {
     const typeText = typeof item.type === 'string' ? item.type : item.type?.name || 'Non défini';
 
-    return (
-      <View style={styles.obstacleCard}>
-        <View style={styles.obstacleInfo}>
-          <Text style={styles.obstacleTitle}>{item.title}</Text>
-          <Text style={styles.obstacleType}>Type: {typeText}</Text>
-          <Text style={styles.obstacleDescription}>{item.description}</Text>
-          <Text style={styles.obstaclePosition}>Position: {item.latitude}, {item.longitude}</Text>
-        </View>
+    const actions = (
+      <ThemedButton
+        onPress={() => deleteObstacle(item)}
+        style={styles.deleteButton}
+        iconName="delete"
+        textStyle={{fontSize: 18, color: "white"}}
+        backgroundColor="transparent"
+      >
+        Supprimer
+      </ThemedButton>
+    );
 
-        <ThemedButton
-          onPress={() => deleteObstacle(item)}
-          style={styles.deleteButton}
-          iconName="delete"
-          textStyle={{fontSize: 18, color: "white"}}
-          backgroundColor="transparent"
-        >
-          Supprimer
-        </ThemedButton>
-      </View>
+    return (
+      <Card actions={actions}>
+        <Text style={styles.obstacleTitle}>{item.title}</Text>
+        <Text style={styles.obstacleType}>Type: {typeText}</Text>
+        <Text style={styles.obstacleDescription}>{item.description}</Text>
+        <Text style={styles.obstaclePosition}>Position: {item.latitude}, {item.longitude}</Text>
+      </Card>
     );
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Bonjour {name} {surname}</Text>
-      <Text style={styles.subtitle}>Camion immatriculé {truckRegistration}</Text>
+    <SafeAreaView style={commonStyles.container}>
+      <Text style={commonStyles.title}>Bonjour {name} {surname}</Text>
+      <Text style={commonStyles.subtitle}>Camion immatriculé {truckRegistration}</Text>
 
-      <Text style={styles.obstaclesHeader}>Obstacles signalés ({obstacleList.length})</Text>
+      <Text style={commonStyles.listHeader}>Obstacles signalés ({obstacleList.length})</Text>
       <FlatList
         data={obstacleList}
         renderItem={renderObstacle}
         keyExtractor={(item, index) => index.toString()}
-        style={styles.obstaclesList}
+        style={commonStyles.list}
         showsVerticalScrollIndicator={false}
       />
       <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
-        <Pressable style={styles.button} onPress={() => {router.navigate('/obstacle')}}>
+        <Pressable style={commonStyles.floatingButton} onPress={() => {router.navigate('/obstacle')}}>
           <MaterialIcons name="add" style={{color: "black", fontSize: 40}}/>
         </Pressable>
       </View>
@@ -104,64 +106,6 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10
-  },
-  title: {
-    fontSize: 40,
-    color: "white",
-    textAlign: "center",
-    padding: 10
-  },
-  subtitle: {
-    fontSize: 30,
-    color: "white",
-    textAlign: "center",
-    padding: 10
-  },
-  button: {
-    margin: 20,
-    backgroundColor: 'lightgray',
-    borderRadius: "50%",
-    width: 75,
-    height: 75, 
-    borderWidth: 1,
-    borderColor: "white",
-    shadowColor: "white",
-    shadowOffset: {width: 2, height: 4},
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  obstaclesHeader: {
-    fontSize: 24,
-    color: "white",
-    textAlign: "center",
-    marginVertical: 10,
-    fontWeight: "bold"
-  },
-  obstaclesList: {
-    flex: 1,
-    marginTop: 10
-  },
-  obstacleCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center"
-  },
-  obstacleInfo: {
-    flex: 1,
-    marginRight: 10
-  },
   obstacleTitle: {
     fontSize: 18,
     color: "white",

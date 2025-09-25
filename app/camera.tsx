@@ -1,5 +1,6 @@
 import { ThemedButton } from "@/components/themed-button";
-import { CameraView, useCameraPermissions } from "expo-camera";
+import { useCameraPermissionsWrapper } from "@/hooks/use-permissions";
+import { CameraView } from "expo-camera";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
@@ -8,7 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CameraScreen () {
 
-    const [ permission, requestPermission ] = useCameraPermissions();
+    const { status, requestPermission } = useCameraPermissionsWrapper();
     const cameraRef = useRef<CameraView>(null);
     const [ photoUri, setPhotoUri ] = useState<string | null>(null)
 
@@ -20,11 +21,11 @@ export default function CameraScreen () {
         })
     }
     
-    if (!permission) {
+    if (status === 'loading') {
         return <View />;
     }
 
-    if (!permission.granted) {
+    if (status === 'denied') {
         return (
             <View style={styles.container}>
                 <Text style={styles.message}>Vous avez besoin des autorisations pour utiliser la camera</Text>
